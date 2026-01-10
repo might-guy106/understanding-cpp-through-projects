@@ -50,6 +50,7 @@ int main() {
     if(s.empty()) continue;
 
     std::vector<std::string> tokens = tokenize(s);
+    if (tokens.empty()) continue;
     std::string cmd = tokens[0];
     if (cmd == "echo") {
         for (size_t i = 1; i < tokens.size(); ++i) {
@@ -58,63 +59,27 @@ int main() {
         std::cout << std::endl;
     }
     else if (cmd == "add") {
-        if (tokens.size() != 3) {
-            std::cout << "Usage: add <int> <int>\n";
-            continue;
-        }
-
-        try {
-            int int1 = std::stoi(tokens[1]);
-            int int2 = std::stoi(tokens[2]);
-            std::cout << int1 + int2 << std::endl;
-        } catch (const std::exception&) {
-            std::cout << "Invalid input: expected integers\n";
+        if (auto args = parse_two_ints(tokens)) {
+            std::cout << args->first + args->second << '\n';
         }
     }
     else if (cmd == "sub") {
-        if (tokens.size() != 3) {
-            std::cout << "Usage: sub <int> <int>\n";
-            continue;
-        }
-
-        try {
-            int int1 = std::stoi(tokens[1]);
-            int int2 = std::stoi(tokens[2]);
-            std::cout << int1 - int2 << std::endl;
-        } catch (const std::exception&) {
-            std::cout << "Invalid input: expected integers\n";
+        if (auto args = parse_two_ints(tokens)) {
+            std::cout << args->first - args->second << '\n';
         }
     }
     else if (cmd == "mul") {
-        if (tokens.size() != 3) {
-            std::cout << "Usage: mul <int> <int>\n";
-            continue;
-        }
-
-        try {
-            int int1 = std::stoi(tokens[1]);
-            int int2 = std::stoi(tokens[2]);
-            std::cout << int1 * int2 << std::endl;
-        } catch (const std::exception&) {
-            std::cout << "Invalid input: expected integers\n";
+        if (auto args = parse_two_ints(tokens)) {
+            std::cout << args->first * args->second << '\n';
         }
     }
     else if (cmd == "div") {
-        if (tokens.size() != 3) {
-            std::cout << "Usage: div <int> <int>\n";
-            continue;
-        }
-
-        try {
-            int int1 = std::stoi(tokens[1]);
-            int int2 = std::stoi(tokens[2]);
-            if (int2 == 0) {
+        if (auto args = parse_two_ints(tokens)) {
+            if (args->second == 0) {
                 std::cout << "Error: division by zero\n";
             } else {
-                std::cout << int1 / int2 << std::endl;
+                std::cout << args->first / args->second << '\n';
             }
-        } catch (const std::exception&) {
-            std::cout << "Invalid input: expected integers\n";
         }
     }
     else if (cmd == "help") {
