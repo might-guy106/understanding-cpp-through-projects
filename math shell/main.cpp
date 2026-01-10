@@ -3,35 +3,40 @@
 #include <string>
 #include <vector>
 #include <optional>
+#include <string_view>
 
-std::vector<std::string> tokenize(const std::string& s){
-    std::vector<std::string> tokens;
-    std::string token;
-    for (char c : s) {
-        if (c == ' ') {
-            if (token.size() != 0) {
-                tokens.push_back(token);
-                token.clear();
+std::vector<std::string_view> tokenize(std::string_view sv){
+    std::vector<std::string_view> tokens;
+    std::size_t start = 0, len = 0;
+    for(std::size_t i = 0; i < sv.size(); i++){
+        if(sv[i] == ' '){
+            if(len != 0){
+                tokens.push_back(sv.substr(start, len));
+                len = 0;
             }
+            start = i + 1;
         } else {
-            token += c;
+            len++;
         }
     }
-    if (token.size() != 0) {
-        tokens.push_back(token);
+    if(len != 0){
+        tokens.push_back(sv.substr(start, len));
     }
+
     return tokens;
 }
 
 
-std::optional<std::pair<int,int>> parse_two_ints(const std::vector<std::string>& tokens) {
+std::optional<std::pair<int,int>> parse_two_ints(const std::vector<std::string_view>& tokens) {
     if (tokens.size() != 3) {
         std::cout << "Usage: " << tokens[0] << " <int> <int>\n";
         return std::nullopt;
     }
     try {
-        int a = std::stoi(tokens[1]);
-        int b = std::stoi(tokens[2]);
+        std::string str1{tokens[1]};
+        int a = std::stoi(str1);
+        std::string str2{tokens[2]};
+        int b = std::stoi(str2);
         return std::make_pair(a, b);
     } catch (const std::exception&) {
         std::cout << "Invalid input: expected integers\n";
@@ -49,9 +54,10 @@ int main() {
     }
     if(s.empty()) continue;
 
-    std::vector<std::string> tokens = tokenize(s);
+    std::string_view sv{s};
+    std::vector<std::string_view> tokens = tokenize(sv);
     if (tokens.empty()) continue;
-    std::string cmd = tokens[0];
+    std::string_view cmd = tokens[0];
     if (cmd == "echo") {
         for (size_t i = 1; i < tokens.size(); ++i) {
             std::cout << tokens[i] << ' ';
